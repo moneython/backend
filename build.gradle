@@ -1,0 +1,4 @@
+allprojects {
+    group = 'com.moneython'
+    version = '1.0.0'
+}
