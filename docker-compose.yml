@@ -1,0 +1,50 @@
+version: '3.8'
+services:
+  discovery-service:
+    build:
+      context: ./discovery-service
+    ports:
+      - "8761:8761"
+    networks:
+      - moneython-net
+
+  config-server:
+    build:
+      context: ./config-server
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./config-repo:/config-repo
+    environment:
+      - SPRING_PROFILES_ACTIVE=native
+    networks:
+      - moneython-net
+    depends_on:
+      - discovery-service
+
+  user-service:
+    build:
+      context: ./user-service
+    ports:
+      - "8081:8080"
+    networks:
+      - moneython-net
+    depends_on:
+      - config-server
+      - discovery-service
+
+  gateway-service:
+    build:
+      context: ./gateway-service
+    ports:
+      - "8080:8080"
+    networks:
+      - moneython-net
+    depends_on:
+      - config-server
+      - discovery-service
+      - user-service
+
+networks:
+  moneython-net:
+    driver: bridge
